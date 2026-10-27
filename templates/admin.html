@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CampusConnect Admin Panel</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3a8a;
+        }
+
+        .admin-container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .faq {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+
+        .faq-question {
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+        }
+
+        .edit-btn {
+            background: #16a34a;
+        }
+
+        .edit-btn:hover {
+            background: #15803d;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        hr {
+            margin: 30px 0;
+            border: none;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>CampusConnect – Admin Panel</h1>
+
+    <div class="admin-container">
+
+        <h2>Add New FAQ</h2>
+
+        <input
+            type="text"
+            id="question"
+            placeholder="Enter FAQ question"
+        >
+
+        <textarea
+            id="answer"
+            placeholder="Enter FAQ answer"
+        ></textarea>
+
+        <button onclick="addFAQ()">Add FAQ</button>
+
+        <hr>
+
+        <h2>Existing FAQs</h2>
+
+        <div id="faqList"></div>
+
+    </div>
+
+
+    <script>
+
+        // ==============================
+        // LOAD ALL FAQs
+        // ==============================
+
+        async function loadFAQs() {
+
+            const response = await fetch("/api/faqs");
+
+            const data = await response.json();
+
+            const faqList = document.getElementById("faqList");
+
+            faqList.innerHTML = "";
+
+            data.faqs.forEach(function (faq) {
+
+                const div = document.createElement("div");
+
+                div.className = "faq";
+
+                div.innerHTML = `
+                    <div class="faq-question">
+                        ${faq.id}. ${faq.question}
+                    </div>
+
+                    <p>${faq.answer}</p>
+
+                    <button
+                        class="edit-btn"
+                        onclick="editFAQ(${faq.id})">
+                        Edit
+                    </button>
+
+                    <button
+                        class="delete-btn"
+                        onclick="deleteFAQ(${faq.id})">
+                        Delete
+                    </button>
+                `;
+
+                faqList.appendChild(div);
+            });
+        }
+
+
+        // ==============================
+        // ADD FAQ
+        // ==============================
+
+        async function addFAQ() {
+
+            const question =
+                document.getElementById("question").value.trim();
+
+            const answer =
+                document.getElementById("answer").value.trim();
+
+            if (question === "" || answer === "") {
+
+                alert("Please enter both question and answer.");
+
+                return;
+            }
+
+            const response = await fetch("/api/faqs", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    question: question,
+                    answer: answer
+                })
+            });
+
+            if (response.ok) {
+
+                alert("FAQ added successfully!");
+
+                document.getElementById("question").value = "";
+
+                document.getElementById("answer").value = "";
+
+                loadFAQs();
+
+            } else {
+
+                alert("Error adding FAQ.");
+            }
+        }
+
+
+        // ==============================
+        // EDIT / UPDATE FAQ
+        // ==============================
+
+        async function editFAQ(id) {
+
+            const questionElement =
+                document.querySelector(
+                    `.faq button[onclick="editFAQ(${id})"]`
+                );
+
+            const faqDiv = questionElement.parentElement;
+
+            const currentQuestion =
+                faqDiv.querySelector(".faq-question").innerText
+                    .replace(`${id}. `, "");
+
+            const currentAnswer =
+                faqDiv.querySelector("p").innerText;
+
+
+            const newQuestion = prompt(
+                "Edit Question:",
+                currentQuestion
+            );
+
+            if (newQuestion === null) {
+                return;
+            }
+
+
+            const newAnswer = prompt(
+                "Edit Answer:",
+                currentAnswer
+            );
+
+            if (newAnswer === null) {
+                return;
+            }
+
+
+            if (
+                newQuestion.trim() === "" ||
+                newAnswer.trim() === ""
+            ) {
+
+                alert("Question and answer cannot be empty.");
+
+                return;
+            }
+
+
+            const response = await fetch(
+                `/api/faqs/${id}`,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        question: newQuestion.trim(),
+                        answer: newAnswer.trim()
+                    })
+                }
+            );
+
+
+            if (response.ok) {
+
+                alert("FAQ updated successfully!");
+
+                loadFAQs();
+
+            } else {
+
+                alert("Error updating FAQ.");
+            }
+        }
+
+
+        // ==============================
+        // DELETE FAQ
+        // ==============================
+
+        async function deleteFAQ(id) {
+
+            if (
+                !confirm(
+                    "Are you sure you want to delete this FAQ?"
+                )
+            ) {
+                return;
+            }
+
+
+            const response = await fetch(
+                `/api/faqs/${id}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+
+            if (response.ok) {
+
+                alert("FAQ deleted successfully!");
+
+                loadFAQs();
+
+            } else {
+
+                alert("Error deleting FAQ.");
+            }
+        }
+
+
+        // ==============================
+        // LOAD FAQs WHEN PAGE OPENS
+        // ==============================
+
+        loadFAQs();
+
+    </script>
+
+</body>
+
+</html>
