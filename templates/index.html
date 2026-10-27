@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
-<body>
+<body id="home">
 
     <!-- Navbar -->
     <nav class="navbar">
@@ -20,15 +20,15 @@
         </div>
 
         <div class="nav-links">
-            <a href="#">Home</a>
-            <a href="#">About</a>
-            <a href="#">FAQs</a>
-            <a href="#">Contact</a>
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#faqs">FAQs</a>
+            <a href="#contact">Contact</a>
         </div>
 
-        <button class="login-btn">
+        <a href="/admin" class="login-btn">
             Admin Login
-        </button>
+        </a>
 
     </nav>
 
@@ -50,7 +50,8 @@
                 fees, scholarships, hostel, library and more.
             </p>
 
-            <button class="start-btn">
+            <button class="start-btn"
+                    onclick="document.querySelector('.chat-input input').focus()">
                 Start Chatting 🤖
             </button>
 
@@ -95,10 +96,21 @@
             <!-- Quick Questions -->
             <div class="quick-buttons">
 
-                <button onclick="askQuickQuestion('admission')">Admissions</button>
-                <button onclick="askQuickQuestion('exam')">Exams</button>
-                <button onclick="askQuickQuestion('fee')">Fees</button>
-                <button onclick="askQuickQuestion('hostel')">Hostel</button>
+                <button onclick="askQuickQuestion('admission')">
+                    Admissions
+                </button>
+
+                <button onclick="askQuickQuestion('exam')">
+                    Exams
+                </button>
+
+                <button onclick="askQuickQuestion('fee')">
+                    Fees
+                </button>
+
+                <button onclick="askQuickQuestion('hostel')">
+                    Hostel
+                </button>
 
             </div>
 
@@ -122,14 +134,34 @@
     </section>
 
 
-    <!-- Quick Access -->
-    <section class="quick-access">
+    <!-- About Section -->
+    <section id="about" class="quick-access">
+
+        <h2>About CampusConnect</h2>
+
+        <p>
+            CampusConnect is a college FAQ chatbot designed to
+            provide quick and easy answers to common college
+            related questions such as admissions, examinations,
+            fees, hostel, library and other campus information.
+        </p>
+
+    </section>
+
+
+    <!-- Quick Access / FAQs -->
+    <section id="faqs" class="quick-access">
 
         <h2>Quick Access</h2>
 
         <div class="cards">
 
-            <div class="card">
+            <!-- Admissions -->
+            <div
+                class="card"
+                onclick="askQuickQuestion('admission')"
+                style="cursor: pointer;"
+            >
 
                 <div class="card-icon">🎓</div>
 
@@ -142,7 +174,12 @@
             </div>
 
 
-            <div class="card">
+            <!-- Examinations -->
+            <div
+                class="card"
+                onclick="askQuickQuestion('exam')"
+                style="cursor: pointer;"
+            >
 
                 <div class="card-icon">📅</div>
 
@@ -155,7 +192,12 @@
             </div>
 
 
-            <div class="card">
+            <!-- Fees -->
+            <div
+                class="card"
+                onclick="askQuickQuestion('fee')"
+                style="cursor: pointer;"
+            >
 
                 <div class="card-icon">💰</div>
 
@@ -168,7 +210,12 @@
             </div>
 
 
-            <div class="card">
+            <!-- Library -->
+            <div
+                class="card"
+                onclick="askQuickQuestion('library')"
+                style="cursor: pointer;"
+            >
 
                 <div class="card-icon">📚</div>
 
@@ -181,6 +228,19 @@
             </div>
 
         </div>
+
+    </section>
+
+
+    <!-- Contact Section -->
+    <section id="contact" class="quick-access">
+
+        <h2>Contact</h2>
+
+        <p>
+            For further college-related information,
+            please contact the respective college department.
+        </p>
 
     </section>
 
@@ -200,7 +260,10 @@
 
     </footer>
 
+
+    <!-- JavaScript -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>
+
 </html>
