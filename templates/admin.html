@@ -18,6 +18,28 @@
         h1 {
             text-align: center;
             color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+
+        .top-bar {
+            max-width: 900px;
+            margin: 0 auto 15px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .logout-btn {
+            background: #dc2626;
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .logout-btn:hover {
+            background: #b91c1c;
         }
 
         .admin-container {
@@ -98,6 +120,14 @@
 <body>
 
     <h1>CampusConnect – Admin Panel</h1>
+
+    <!-- Logout Button -->
+    <div class="top-bar">
+        <a href="/admin/logout" class="logout-btn">
+            Logout
+        </a>
+    </div>
+
 
     <div class="admin-container">
 

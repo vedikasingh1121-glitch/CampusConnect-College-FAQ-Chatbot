@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login - CampusConnect</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background: linear-gradient(135deg, #071a35, #0d315c);
+        }
+
+
+        .login-container {
+            width: 390px;
+            padding: 35px;
+
+            background: white;
+            border-radius: 18px;
+
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+
+            text-align: center;
+        }
+
+
+        .lock-icon {
+            width: 70px;
+            height: 70px;
+
+            margin: 0 auto 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #eaf4ff;
+            border-radius: 50%;
+
+            font-size: 32px;
+        }
+
+
+        h1 {
+            color: #0b2345;
+            margin-bottom: 8px;
+        }
+
+
+        .subtitle {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 18px;
+        }
+
+
+        .input-group label {
+            display: block;
+            margin-bottom: 7px;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            color: #333;
+        }
+
+
+        .input-group input {
+            width: 100%;
+
+            padding: 12px 14px;
+
+            border: 1px solid #d5dbe3;
+            border-radius: 9px;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+
+        .input-group input:focus {
+            border-color: #1976d2;
+        }
+
+
+        .login-btn {
+            width: 100%;
+
+            padding: 13px;
+
+            border: none;
+            border-radius: 9px;
+
+            background: #1976d2;
+            color: white;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            margin-top: 8px;
+        }
+
+
+        .login-btn:hover {
+            background: #125ca3;
+        }
+
+
+        .error {
+            background: #ffe8e8;
+            color: #c62828;
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .back-home {
+            display: inline-block;
+
+            margin-top: 20px;
+
+            color: #1976d2;
+
+            text-decoration: none;
+
+            font-size: 14px;
+        }
+
+
+        .back-home:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="login-container">
+
+        <div class="lock-icon">
+            🔐
+        </div>
+
+        <h1>Admin Login</h1>
+
+        <p class="subtitle">
+            CampusConnect Administration
+        </p>
+
+
+        {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <form method="POST">
+
+            <div class="input-group">
+
+                <label>Username</label>
+
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Enter admin username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>Password</label>
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter admin password"
+                    required
+                >
+
+            </div>
+
+
+            <button type="submit" class="login-btn">
+                Login to Admin Panel
+            </button>
+
+        </form>
+
+
+        <a href="/" class="back-home">
+            ← Back to Chatbot
+        </a>
+
+    </div>
+
+</body>
+
+</html>
