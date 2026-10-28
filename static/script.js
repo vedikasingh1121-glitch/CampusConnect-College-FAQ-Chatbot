@@ -2,79 +2,277 @@ const input = document.querySelector(".chat-input input");
 const sendButton = document.querySelector(".chat-input button");
 const chatBody = document.querySelector(".chat-body");
 
-let faqData = [];
 
+// ==============================
+// SEND MESSAGE TO NLP BACKEND
+// ==============================
 
-// Load FAQs from Flask + SQLite database
-async function loadFAQs() {
+async function getBotAnswer(question) {
+
     try {
-        const response = await fetch("/api/faqs");
+
+        const response = await fetch("/api/chat", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                question: question
+            })
+
+        });
+
+        if (!response.ok) {
+            throw new Error("Server error");
+        }
+
         const data = await response.json();
 
-        faqData = data.faqs;
+        console.log("Detected Intent:", data.intent);
+        console.log("Similarity Score:", data.similarity);
 
-        console.log("FAQs loaded from database:", faqData);
+        return data.answer;
 
     } catch (error) {
-        console.error("Error loading FAQs:", error);
+
+        console.error("Chatbot error:", error);
+
+        return "Sorry, something went wrong. Please try again.";
     }
 }
 
 
-// Find matching FAQ
-function findAnswer(question) {
+// ==============================
+// SAVE FEEDBACK
+// ==============================
 
-    const userQuestion = question.toLowerCase().trim();
+async function saveFeedback(
+    question,
+    answer,
+    feedback,
+    unresolvedQuery = ""
+) {
 
-    // Exact question match
-    for (let faq of faqData) {
+    try {
 
-        if (
-            faq.question.toLowerCase().trim() === userQuestion
-        ) {
-            return faq.answer;
+        const response = await fetch("/api/feedback", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                question: question,
+                answer: answer,
+                feedback: feedback,
+                unresolved_query: unresolvedQuery
+
+            })
+
+        });
+
+
+        if (!response.ok) {
+            throw new Error("Feedback could not be saved");
         }
+
+
+        const data = await response.json();
+
+        console.log(data.message);
+
+        return true;
+
+    } catch (error) {
+
+        console.error("Feedback error:", error);
+
+        return false;
     }
+}
 
 
-    // Keyword matching
-    const keywords = userQuestion
-        .split(/\s+/)
-        .filter(word => word.length > 2);
+// ==============================
+// SHOW FEEDBACK SECTION
+// ==============================
+
+function showFeedbackSection(
+    question,
+    answer,
+    botMessage
+) {
+
+    const feedbackContainer = document.createElement("div");
+
+    feedbackContainer.className = "feedback-container";
 
 
-    let bestAnswer = null;
-    let bestScore = 0;
+    const feedbackText = document.createElement("div");
+
+    feedbackText.className = "feedback-text";
+
+    feedbackText.textContent =
+        "Was this answer helpful?";
 
 
-    for (let faq of faqData) {
+    const buttonContainer = document.createElement("div");
 
-        const faqQuestion = faq.question.toLowerCase();
-
-        let score = 0;
+    buttonContainer.className = "feedback-buttons";
 
 
-        for (let word of keywords) {
+    // YES BUTTON
+    const yesButton = document.createElement("button");
 
-            if (faqQuestion.includes(word)) {
-                score++;
+    yesButton.className = "feedback-btn yes-btn";
+
+    yesButton.textContent = "👍 Yes";
+
+
+    // NO BUTTON
+    const noButton = document.createElement("button");
+
+    noButton.className = "feedback-btn no-btn";
+
+    noButton.textContent = "👎 No";
+
+
+    buttonContainer.appendChild(yesButton);
+    buttonContainer.appendChild(noButton);
+
+
+    feedbackContainer.appendChild(feedbackText);
+    feedbackContainer.appendChild(buttonContainer);
+
+
+    chatBody.appendChild(feedbackContainer);
+
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+
+    // ==============================
+    // YES CLICK
+    // ==============================
+
+    yesButton.addEventListener("click", async function() {
+
+        yesButton.disabled = true;
+        noButton.disabled = true;
+
+        await saveFeedback(
+            question,
+            answer,
+            "helpful"
+        );
+
+        feedbackText.textContent =
+            "Thanks for your feedback! 💜";
+
+        buttonContainer.remove();
+
+    });
+
+
+    // ==============================
+    // NO CLICK
+    // ==============================
+
+    noButton.addEventListener("click", function() {
+
+        yesButton.disabled = true;
+        noButton.disabled = true;
+
+        feedbackText.textContent =
+            "Sorry about that! What information were you looking for?";
+
+
+        const unresolvedInput =
+            document.createElement("input");
+
+        unresolvedInput.className =
+            "unresolved-input";
+
+        unresolvedInput.placeholder =
+            "Tell us what you were looking for...";
+
+
+        const submitButton =
+            document.createElement("button");
+
+        submitButton.className =
+            "unresolved-submit";
+
+        submitButton.textContent =
+            "Submit";
+
+
+        const unresolvedBox =
+            document.createElement("div");
+
+        unresolvedBox.className =
+            "unresolved-box";
+
+
+        unresolvedBox.appendChild(unresolvedInput);
+        unresolvedBox.appendChild(submitButton);
+
+
+        feedbackContainer.appendChild(unresolvedBox);
+
+
+        unresolvedInput.focus();
+
+
+        // ==============================
+        // SUBMIT UNRESOLVED QUERY
+        // ==============================
+
+        submitButton.addEventListener(
+            "click",
+            async function() {
+
+                const unresolvedQuery =
+                    unresolvedInput.value.trim();
+
+
+                if (unresolvedQuery === "") {
+                    return;
+                }
+
+
+                submitButton.disabled = true;
+
+
+                await saveFeedback(
+                    question,
+                    answer,
+                    "not_helpful",
+                    unresolvedQuery
+                );
+
+
+                feedbackText.textContent =
+                    "Thanks! Your feedback has been recorded. 💜";
+
+
+                unresolvedBox.remove();
             }
-        }
+        );
 
+    });
 
-        if (score > bestScore) {
-
-            bestScore = score;
-            bestAnswer = faq.answer;
-        }
-    }
-
-
-    return bestAnswer;
 }
 
 
-// Send message
+// ==============================
+// SEND MESSAGE
+// ==============================
+
 async function sendMessage() {
 
     const originalQuestion = input.value.trim();
@@ -85,90 +283,190 @@ async function sendMessage() {
     }
 
 
-    const question = originalQuestion.toLowerCase();
+    const question =
+        originalQuestion.toLowerCase();
 
 
-    // Show user's question
-    const userMessage = document.createElement("div");
+    // ==============================
+    // SHOW USER MESSAGE
+    // ==============================
 
-    userMessage.className = "message user-message";
+    const userMessage =
+        document.createElement("div");
 
-    userMessage.textContent = originalQuestion;
+    userMessage.className =
+        "message user-message";
+
+    userMessage.textContent =
+        originalQuestion;
 
     chatBody.appendChild(userMessage);
 
+    chatBody.scrollTop =
+        chatBody.scrollHeight;
 
-    let answer = null;
 
+    // ==============================
+    // GREETING
+    // ==============================
 
-    // Greeting
     if (
         question === "hello" ||
         question === "hi" ||
         question === "hey" ||
-        question.startsWith("hello ") ||
-        question.startsWith("hi ") ||
-        question.startsWith("hey ")
+        question === "hello!" ||
+        question === "hi!" ||
+        question === "hey!"
     ) {
 
-        answer =
-            "Hello! 👋 How can I help you with college information?";
+        const typingMessage =
+            document.createElement("div");
 
+        typingMessage.className =
+            "typing-indicator";
+
+        typingMessage.textContent =
+            "CampusConnect is typing...";
+
+        chatBody.appendChild(typingMessage);
+
+        chatBody.scrollTop =
+            chatBody.scrollHeight;
+
+
+        setTimeout(function() {
+
+            typingMessage.remove();
+
+
+            const botMessage =
+                document.createElement("div");
+
+            botMessage.className =
+                "message";
+
+            botMessage.textContent =
+                "Hello! 👋 How can I help you with IPS Academy information?";
+
+            chatBody.appendChild(botMessage);
+
+            chatBody.scrollTop =
+                chatBody.scrollHeight;
+
+        }, 700);
+
+
+        input.value = "";
+
+        return;
     }
 
-    else {
 
-        // Search answer from database FAQs
-        answer = findAnswer(question);
-    }
+    // ==============================
+    // TYPING INDICATOR
+    // ==============================
+
+    const typingMessage =
+        document.createElement("div");
+
+    typingMessage.className =
+        "typing-indicator";
+
+    typingMessage.textContent =
+        "CampusConnect is typing...";
+
+    chatBody.appendChild(typingMessage);
+
+    chatBody.scrollTop =
+        chatBody.scrollHeight;
 
 
-    // Fallback
-    if (!answer) {
+    // ==============================
+    // GET NLP ANSWER
+    // ==============================
 
-        answer =
-            "Sorry, I don't have information about that question yet. Please try asking about admissions, fees, exams, hostel or library.";
-    }
+    const answer =
+        await getBotAnswer(originalQuestion);
 
 
-    // Show bot answer
-    setTimeout(function () {
+    // ==============================
+    // SHOW BOT RESPONSE
+    // ==============================
 
-        const botMessage = document.createElement("div");
+    setTimeout(function() {
 
-        botMessage.className = "message";
+        typingMessage.remove();
 
-        botMessage.textContent = answer;
+
+        const botMessage =
+            document.createElement("div");
+
+        botMessage.className =
+            "message";
+
+        botMessage.textContent =
+            answer;
+
 
         chatBody.appendChild(botMessage);
 
-        chatBody.scrollTop = chatBody.scrollHeight;
+        chatBody.scrollTop =
+            chatBody.scrollHeight;
 
-    }, 500);
+
+        // ==============================
+        // SHOW FEEDBACK
+        // ==============================
+
+        showFeedbackSection(
+            originalQuestion,
+            answer,
+            botMessage
+        );
 
 
+    }, 600);
+
+
+    // Clear input
     input.value = "";
 }
 
 
-// Send button
-sendButton.addEventListener("click", sendMessage);
+// ==============================
+// SEND BUTTON
+// ==============================
+
+sendButton.addEventListener(
+    "click",
+    sendMessage
+);
 
 
-// Press Enter to send
-input.addEventListener("keydown", function(event) {
+// ==============================
+// ENTER KEY
+// ==============================
 
-    if (event.key === "Enter") {
+input.addEventListener(
+    "keydown",
+    function(event) {
 
-        event.preventDefault();
+        if (event.key === "Enter") {
 
-        sendMessage();
+            event.preventDefault();
+
+            sendMessage();
+
+        }
+
     }
+);
 
-});
 
+// ==============================
+// QUICK QUESTIONS
+// ==============================
 
-// Quick question buttons
 function askQuickQuestion(topic) {
 
     input.value = topic;
@@ -176,7 +474,3 @@ function askQuickQuestion(topic) {
     sendMessage();
 
 }
-
-
-// Load database FAQs when page opens
-loadFAQs();

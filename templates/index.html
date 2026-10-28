@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>College FAQ Chatbot</title>
+    <title>CampusConnect - College FAQ Chatbot</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -15,19 +15,37 @@
     <!-- Navbar -->
     <nav class="navbar">
 
-        <div class="logo">
-            🎓 College FAQ
-        </div>
+        <!-- Logo -->
+        <a href="#home" class="logo">
+            <span class="logo-icon">🎓</span>
+            <span>CampusConnect</span>
+        </a>
 
+        <!-- Navigation -->
         <div class="nav-links">
-            <a href="#home">Home</a>
-            <a href="#about">About</a>
-            <a href="#faqs">FAQs</a>
-            <a href="#contact">Contact</a>
+
+            <a href="#home" class="nav-link active">
+                Home
+            </a>
+
+            <a href="#about" class="nav-link">
+                About
+            </a>
+
+            <a href="#faqs" class="nav-link">
+                FAQs
+            </a>
+
+            <a href="#contact" class="nav-link">
+                Contact
+            </a>
+
         </div>
 
+        <!-- Admin -->
         <a href="/admin" class="login-btn">
-            Admin Login
+            <span>Admin</span>
+            <span class="login-arrow">→</span>
         </a>
 
     </nav>
@@ -45,13 +63,15 @@
             </h1>
 
             <p>
-                Welcome to the College FAQ Chatbot.
-                Get quick answers about admissions, exams,
-                fees, scholarships, hostel, library and more.
+                Welcome to CampusConnect.
+                Get quick answers about admissions, courses,
+                exams, fees, hostel, library and campus facilities.
             </p>
 
-            <button class="start-btn"
-                    onclick="document.querySelector('.chat-input input').focus()">
+            <button
+                class="start-btn"
+                onclick="document.querySelector('.chat-input input').focus()"
+            >
                 Start Chatting 🤖
             </button>
 
@@ -61,6 +81,7 @@
         <!-- Chatbot -->
         <div class="chatbot">
 
+            <!-- Chat Header -->
             <div class="chat-header">
 
                 <div class="bot-icon">
@@ -68,26 +89,38 @@
                 </div>
 
                 <div>
-                    <h3>College Assistant</h3>
+                    <h3>CampusConnect Assistant</h3>
                     <span class="online">● Online</span>
                 </div>
 
             </div>
 
 
+            <!-- Chat Body -->
             <div class="chat-body">
 
-                <div class="message">
-                    👋 Hello! How can I help you today?
-                </div>
+                <!-- Welcome Message -->
+                <div class="welcome-message">
 
-                <div class="message user-message">
-                    What are the admission details?
-                </div>
+                    <div class="welcome-icon">
+                        👋
+                    </div>
 
-                <div class="message">
-                    Sure! I can help you with admission
-                    related information.
+                    <div class="welcome-content">
+
+                        <h4>Welcome to CampusConnect</h4>
+
+                        <p>
+                            Your quick guide to IPS Academy information.
+                        </p>
+
+                        <span>
+                            Ask about admissions, courses, exams,
+                            fees, hostel, library and more.
+                        </span>
+
+                    </div>
+
                 </div>
 
             </div>
@@ -96,34 +129,37 @@
             <!-- Quick Questions -->
             <div class="quick-buttons">
 
-                <button onclick="askQuickQuestion('admission')">
-                    Admissions
+                <button onclick="askQuickQuestion('admission process')">
+                    🎓 Admissions
                 </button>
 
-                <button onclick="askQuickQuestion('exam')">
-                    Exams
+                <button onclick="askQuickQuestion('exam information')">
+                    📝 Exams
                 </button>
 
-                <button onclick="askQuickQuestion('fee')">
-                    Fees
+                <button onclick="askQuickQuestion('fee structure')">
+                    💰 Fees
                 </button>
 
-                <button onclick="askQuickQuestion('hostel')">
-                    Hostel
+                <button onclick="askQuickQuestion('hostel facility')">
+                    🏠 Hostel
                 </button>
 
             </div>
 
 
-            <!-- Input -->
+            <!-- Chat Input -->
             <div class="chat-input">
 
                 <input
                     type="text"
-                    placeholder="Ask your question..."
+                    placeholder="Ask about IPS Academy..."
                 >
 
-                <button onclick="sendMessage()">
+                <button
+                    onclick="sendMessage()"
+                    aria-label="Send message"
+                >
                     ➤
                 </button>
 
@@ -149,18 +185,21 @@
     </section>
 
 
-    <!-- Quick Access / FAQs -->
+    <!-- Explore CampusConnect -->
     <section id="faqs" class="quick-access">
 
-        <h2>Quick Access</h2>
+        <h2>Explore CampusConnect</h2>
+
+        <p class="section-subtitle">
+            Tap a category to instantly explore college information.
+        </p>
 
         <div class="cards">
 
             <!-- Admissions -->
             <div
-                class="card"
-                onclick="askQuickQuestion('admission')"
-                style="cursor: pointer;"
+                class="card explore-card"
+                onclick="askQuickQuestion('What is the admission process at IPS Academy?')"
             >
 
                 <div class="card-icon">🎓</div>
@@ -168,62 +207,117 @@
                 <h3>Admissions</h3>
 
                 <p>
-                    Admission process and eligibility
+                    Explore admission process and eligibility
                 </p>
+
+                <span class="card-link">
+                    Ask CampusConnect →
+                </span>
 
             </div>
 
 
-            <!-- Examinations -->
+            <!-- Courses -->
             <div
-                class="card"
-                onclick="askQuickQuestion('exam')"
-                style="cursor: pointer;"
+                class="card explore-card"
+                onclick="askQuickQuestion('What courses are available at IPS Academy?')"
             >
 
-                <div class="card-icon">📅</div>
+                <div class="card-icon">💻</div>
 
-                <h3>Examinations</h3>
+                <h3>Courses & CSIT</h3>
 
                 <p>
-                    Exam schedules and information
+                    Explore courses and CSIT information
                 </p>
+
+                <span class="card-link">
+                    Ask CampusConnect →
+                </span>
 
             </div>
 
 
-            <!-- Fees -->
+            <!-- Exams -->
             <div
-                class="card"
-                onclick="askQuickQuestion('fee')"
-                style="cursor: pointer;"
+                class="card explore-card"
+                onclick="askQuickQuestion('How can I get information about examinations?')"
             >
 
-                <div class="card-icon">💰</div>
+                <div class="card-icon">📝</div>
 
-                <h3>Fees</h3>
+                <h3>Exams & Academics</h3>
 
                 <p>
-                    Fee structure and payment details
+                    Find examination and academic information
                 </p>
+
+                <span class="card-link">
+                    Ask CampusConnect →
+                </span>
+
+            </div>
+
+
+            <!-- Campus Life -->
+            <div
+                class="card explore-card"
+                onclick="askQuickQuestion('Is hostel facility available at IPS Academy?')"
+            >
+
+                <div class="card-icon">🏠</div>
+
+                <h3>Campus Life</h3>
+
+                <p>
+                    Explore hostel and student facilities
+                </p>
+
+                <span class="card-link">
+                    Ask CampusConnect →
+                </span>
 
             </div>
 
 
             <!-- Library -->
             <div
-                class="card"
-                onclick="askQuickQuestion('library')"
-                style="cursor: pointer;"
+                class="card explore-card"
+                onclick="askQuickQuestion('What facilities are available in the library?')"
             >
 
                 <div class="card-icon">📚</div>
 
-                <h3>Library</h3>
+                <h3>Library & Facilities</h3>
 
                 <p>
-                    Library timings and facilities
+                    Explore library and campus facilities
                 </p>
+
+                <span class="card-link">
+                    Ask CampusConnect →
+                </span>
+
+            </div>
+
+
+            <!-- Labs -->
+            <div
+                class="card explore-card"
+                onclick="askQuickQuestion('What laboratories are available at IPS Academy?')"
+            >
+
+                <div class="card-icon">🤖</div>
+
+                <h3>Labs & Innovation</h3>
+
+                <p>
+                    Discover labs, technology and innovation
+                </p>
+
+                <span class="card-link">
+                    Ask CampusConnect →
+                </span>
 
             </div>
 
@@ -248,14 +342,14 @@
     <!-- Footer -->
     <footer>
 
-        <h3>College FAQ Chatbot 🤖</h3>
+        <h3>CampusConnect 🤖</h3>
 
         <p>
             Your digital assistant for college information.
         </p>
 
         <p>
-            © 2026 College FAQ Chatbot
+            © 2026 CampusConnect - College FAQ Chatbot
         </p>
 
     </footer>

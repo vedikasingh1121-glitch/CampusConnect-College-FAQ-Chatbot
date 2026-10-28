@@ -149,6 +149,16 @@
         <hr>
 
         <h2>Existing FAQs</h2>
+        <!-- ==============================
+     STUDENT FEEDBACK
+     ============================== -->
+
+<h2 style="margin-top: 50px;">Student Feedback</h2>
+
+<div id="feedback-container">
+    <p>Loading feedback...</p>
+
+</div>
 
         <div id="faqList"></div>
 
@@ -373,6 +383,75 @@
         // ==============================
         // LOAD FAQs WHEN PAGE OPENS
         // ==============================
+        // ==============================
+// LOAD STUDENT FEEDBACK
+// ==============================
+
+async function loadFeedback() {
+
+    const container =
+        document.getElementById("feedback-container");
+
+    const response =
+        await fetch("/api/feedback");
+
+    if (!response.ok) {
+
+        container.innerHTML =
+            "<p>Unable to load feedback.</p>";
+
+        return;
+    }
+
+    const data = await response.json();
+
+    container.innerHTML = "";
+
+    if (data.feedback.length === 0) {
+
+        container.innerHTML =
+            "<p>No student feedback yet.</p>";
+
+        return;
+    }
+
+    data.feedback.forEach(item => {
+
+        const feedbackDiv =
+            document.createElement("div");
+
+        feedbackDiv.style.marginBottom = "20px";
+        feedbackDiv.style.padding = "15px";
+        feedbackDiv.style.border = "1px solid #ddd";
+        feedbackDiv.style.borderRadius = "10px";
+
+        feedbackDiv.innerHTML = `
+            <strong>Question:</strong>
+            <p>${item.question}</p>
+
+            <strong>Bot Answer:</strong>
+            <p>${item.answer || "N/A"}</p>
+
+            <strong>Feedback:</strong>
+            <p>${item.feedback}</p>
+
+            ${
+                item.unresolved_query
+                ? `
+                <strong>Unresolved Query:</strong>
+                <p>${item.unresolved_query}</p>
+                `
+                : ""
+            }
+
+            <small>${item.created_at}</small>
+        `;
+
+        container.appendChild(feedbackDiv);
+    });
+}
+
+loadFeedback();
 
         loadFAQs();
 
