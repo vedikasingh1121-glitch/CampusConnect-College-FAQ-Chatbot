@@ -145,7 +145,8 @@ def get_faqs():
         ]
     }
 
-    # ==============================
+
+# ==============================
 # GET USER FEEDBACK
 # ==============================
 
@@ -207,6 +208,9 @@ def chat():
     question_vector = vectorizer.transform([question])
 
     intent = model.predict(question_vector)[0]
+
+    # Diagnostic: show predicted intent in terminal
+    print("PREDICTED INTENT:", intent)
 
 
     # ==============================
@@ -371,7 +375,8 @@ def delete_faq(faq_id):
         "message": "FAQ deleted successfully!"
     }
 
-    # ==============================
+
+# ==============================
 # SAVE USER FEEDBACK
 # ==============================
 
